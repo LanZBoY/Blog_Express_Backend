@@ -29,8 +29,7 @@ AuthAPI.post('/login', async(req, res) => {
         return
     }
     const {userName, password} = resultUser;
-    const token = jwt.sign({userName, password}, config["JWT_SECRET_KEY"]);
-
+    const token = jwt.sign({_id : resultUser._id.toString() ,userName, password}, config["JWT_SECRET_KEY"], {expiresIn: 60 * 60});
     res.send({authorization: token});
 });
 
@@ -48,7 +47,10 @@ AuthAPI.get('/isLogin', async(req, res) => {
 const authMiddleware = function(req, res, next){
     const authKey = req.headers["authorization"];
     try{
-        jwt.verify(authKey, config["JWT_SECRET_KEY"]);
+        const user = jwt.verify(authKey, 
+            config["JWT_SECRET_KEY"]);
+        console.log(user);
+        Object.assign(req.body, user);
     }catch(err){
         res.status(403).send();
         return;
