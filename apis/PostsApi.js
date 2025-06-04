@@ -13,9 +13,10 @@ postAPI.get('/', async(req, res) => {
     res.send(resultList);
 })
 
-postAPI.post('/',(req, res) => {
+postAPI.post('/', async (req, res) => {
     if(!isValidPost(req.body)){
         res.status(400).send();
+        return;
     }
     const {_id, title, content, userName} = req.body;
     const createPost = new Post({
@@ -25,7 +26,7 @@ postAPI.post('/',(req, res) => {
         createByName: userName,
         createDate: Date.now()
     });
-    createPost.save();
+    await createPost.save();
     res.status(201).send();
 });
 
